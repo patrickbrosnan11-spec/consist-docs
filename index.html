@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Consist Docs</title>
+<style>
+ body{font:16px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;max-width:860px;margin:32px auto;padding:0 16px}
+ header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+ ul{list-style:none;padding:0}
+ li{margin:6px 0}
+ code{background:#f6f8fa;padding:2px 6px;border-radius:6px}
+ .muted{color:#666}
+</style>
+<header>
+  <h1>Consist Docs</h1>
+  <small class="muted">Latest commit: <span id="sha">unknown</span></small>
+</header>
+<p>Click any file to view. Markdown is rendered; other files show as plaintext.</p>
+<ul id="list"></ul>
+<script>
+(async () => {
+  const res = await fetch('index.json');
+  const files = await res.json();
+  const sha = await fetch('commit.txt').then(r=>r.text()).catch(_=> 'unknown');
+  document.getElementById('sha').textContent = sha.trim().slice(0,7) || 'unknown';
+  const ul = document.getElementById('list');
+  for (const f of files) {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = `viewer.html?path=${encodeURIComponent(f.path)}`;
+    a.textContent = `${f.path} (${f.size} bytes)`;
+    li.appendChild(a);
+    ul.appendChild(li);
+  }
+})();
+</script>
+</html>
