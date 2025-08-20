@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Consist Docs — Viewer</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<style>
+ body{font:16px/1.6 system-ui,Segoe UI,Roboto,Arial,sans-serif;max-width:860px;margin:32px auto;padding:0 16px}
+ pre{background:#0b1021;color:#e6e6e6;padding:16px;border-radius:10px;overflow:auto}
+ code{font-family:ui-monospace,Menlo,Monaco,Consolas,monospace}
+ nav a{text-decoration:none}
+</style>
+<nav><a href="./">← Back to index</a></nav>
+<article id="content"><p>Loading…</p></article>
+<script>
+const params = new URLSearchParams(location.search);
+const path = params.get('path');
+document.title = `Consist Docs — ${path||'Viewer'}`;
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));}
+(async () => {
+  if(!path){ document.getElementById('content').innerHTML = '<p>No file selected.</p>'; return; }
+  const res = await fetch(path);
+  if(!res.ok){ document.getElementById('content').innerHTML = `<p>Failed to load <code>${path}</code></p>`; return; }
+  const text = await res.text();
+  if (path.endsWith('.md')) {
+    const html = marked.parse(text, { mangle:false, headerIds:false });
+    document.getElementById('content').innerHTML = DOMPurify.sanitize(html);
+    document.getElementById('content').innerHTML = DOMPurify.sanitize(html);
+  } else {
+    document.getElementById('content').innerHTML = `<pre><code>${escapeHtml(text)}</code></pre>`;
+  }
+})();
+</script>
+</html>
